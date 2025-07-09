@@ -4,6 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <signal.h>
+#include <errno.h>
+#include <sys/types.h>
 
 // Counts the number of character in a string
 int length(char *str) {
@@ -14,8 +17,6 @@ int length(char *str) {
     return i;
 }
 
-
-// int arr_length()
 
 // Checks if a string contains just spaces. 
 bool is_space(char* str) {
@@ -66,15 +67,33 @@ char **split(char *str) {
     return arr;
 }
 
+
+void sigFunction(int code) {
+    printf("\nH-shell> ");
+    fflush(stdout);
+}
+
+
 // Main function
 int main(int argc, char *argv[]) {
+    
+    signal(SIGINT, sigFunction);
+    signal(SIGTSTP, sigFunction);
+    signal(SIGQUIT, sigFunction);
     while(1) {
         printf("H-shell> ");
-        
+
         char *line = NULL;
         size_t len = 0;
+        signal(SIGTSTP, SIG_IGN);
+        signal(SIGQUIT, SIG_IGN);
         ssize_t chars_read = getline(&line, &len, stdin);
+        
         if (chars_read == -1) {
+            if (errno == EINTR) {
+                free(line);
+                continue;
+            }
             printf("\n");
             free(line);
             exit(0);
