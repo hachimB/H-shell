@@ -7,6 +7,18 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+
+
+void easyFree(char **arr, char* new_line, char* line) {
+    for (int j = 0; arr[j] != NULL; j++) {
+        free(arr[j]);
+        }
+        free(new_line);
+        free(arr);
+        free(line);
+}
+
 
 // Counts the number of character in a string
 int length(char *str) {
@@ -80,9 +92,12 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, sigFunction);
     signal(SIGTSTP, sigFunction);
     signal(SIGQUIT, sigFunction);
+    pid_t pid;
+    int c = 1;
+    int status;
+
     while(1) {
         printf("H-shell> ");
-
         char *line = NULL;
         size_t len = 0;
         signal(SIGTSTP, SIG_IGN);
@@ -138,38 +153,53 @@ int main(int argc, char *argv[]) {
             }
             
             if (strcmp(arr[0], "exit") == 0) {
-                for (int j = 0; j < i; j++) {
-                free(arr[j]);
-                }
-                free(new_line);
-                free(arr);
-                free(line);
-
+                easyFree(arr, new_line, line);
                 exit(0);
             }
 
             if (arr[0] == NULL) {
-                for (int j = 0; j < i; j++) {
-                free(arr[j]);
-                }
-                free(new_line);
-                free(arr);
-                free(line);
+                easyFree(arr, new_line, line);
                 continue;
             }
 
-            printf("%d\n", i);
-            
-            for (int j = 0; j < i; j++) {
-                printf("[%s]\n", arr[j]);
+//--------- Execution [fork()]
+
+            pid = fork();
+            if (pid == -1) {
+                easyFree(arr, new_line, line);
+                exit(1); //EXIT_FAILURE = 1
             }
 
-            for (int j = 0; j < i; j++) {
-                free(arr[j]);
+            else if (pid == 0) {
+                char path[256];
+                snprintf(path, sizeof(path), "/bin/%s", arr[0]);
+                int exe = execve(path, arr, NULL);
+
+                if (exe == -1) {
+                    if(errno == ENOENT) {
+                        easyFree(arr, new_line, line);
+                        exit(127);
+                    }
+                    else {
+                        easyFree(arr, new_line, line);
+                        exit(1);
+                    }
+                }
             }
-            free(arr);
-            free(new_line);
-            free(line);
+
+            else {
+                wait(&status);
+                if(WEXITSTATUS(status) == 127) {
+                    printf("H-shell: %d: %s: not found\n", c, arr[0]);
+                }
+                c++;
+                easyFree(arr, new_line, line);
+                continue;
+            }
+
+//---------
+
+            easyFree(arr, new_line, line);
         }
     }
     return (0);
