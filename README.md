@@ -54,7 +54,7 @@ cd H-shell
 
 ### Compilation
 ```bash
-gcc -Wall -pedantic -o h-shell main.c utils.c signals.c
+gcc -Wall -pedantic -Wextra -Werror h-shell.c signals.c utils.c -o h-shell
 ```
 
 ### Execution

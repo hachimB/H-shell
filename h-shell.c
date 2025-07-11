@@ -2,7 +2,8 @@
 
 
 int main(int argc, char *argv[]) {
-    
+    (void)(argc);
+    (void)(argv);
     signal(SIGINT, sigFunction);
     signal(SIGTSTP, sigFunction);
     signal(SIGQUIT, sigFunction);
