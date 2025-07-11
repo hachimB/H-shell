@@ -84,5 +84,5 @@ valgrind --leak-check=full ./h-shell
 
 - hachimB.  
 - GitHub: [hachimB](https://github.com/hachimB) 
-- LinkedIn: [LinkdIn](https://www.linkedin.com/in/hachim-boubacar-475831254/) 
+- LinkedIn: [LinkedIn](https://www.linkedin.com/in/hachim-boubacar-475831254/) 
 - This project was developed as part of a portfolio project with [Boot.dev](https://www.boot.dev/).
