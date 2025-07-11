@@ -44,6 +44,14 @@ H-shell> exit
 - Valgrind (for memory leak checking)
 - Unix/Linux system
 
+### Clone the repo
+```bash
+git clone https://github.com/hachimB/H-shell.git
+```
+```bash
+cd H-shell
+```
+
 ### Compilation
 ```bash
 gcc -Wall -pedantic -o h-shell main.c utils.c signals.c
