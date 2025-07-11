@@ -82,7 +82,7 @@ valgrind --leak-check=full ./h-shell
 - `signals.c`: Signal handling function (`sigFunction`).
 - `h-shell.h`: Header file with function prototypes and includes.
 
-## Future Improvements
+## Improvements
 
 - Add full `$PATH` support.
 - Implement additional built-ins.
