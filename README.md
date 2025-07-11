@@ -76,12 +76,13 @@ valgrind --leak-check=full ./h-shell
 
 ## Future Improvements
 
-- Add full `$PATH` support for commands in `/usr/bin/` (e.g., `whoami`, `pwd`).
-- Implement additional built-ins like `echo` or `set`.
+- Add full `$PATH` support.
+- Implement additional built-ins.
 - Support redirection (`>`), piping (`|`), and background processes (`&`).
 
 ## Author
 
 hachimB.  
-GitHub: [hachimB](https://github.com/hachimB)  
-This project was developed as part of learning systems programming in C.
+GitHub: [hachimB](https://github.com/hachimB)
+LinkedIn:[linkdIn](https://www.linkedin.com/in/hachim-boubacar-475831254/)
+This project was developed as part of a portfolio project with [Boot.dev](https://www.boot.dev/).
