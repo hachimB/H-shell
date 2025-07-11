@@ -1,92 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdbool.h>
-#include <signal.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "h-shell.h"
 
 
-void easyFree(char **arr, char* new_line, char* line) {
-    for (int j = 0; arr[j] != NULL; j++) {
-        free(arr[j]);
-        }
-        free(new_line);
-        free(arr);
-        free(line);
-}
-
-
-// Counts the number of character in a string
-int length(char *str) {
-    int i = 0;
-    while(str[i] != '\0'){
-        i++;
-    }
-    return i;
-}
-
-
-// Checks if a string contains just spaces. 
-bool is_space(char* str) {
-    int i = 0;
-    while(str[i] != 0) {
-        if (str[i] != ' ') {
-            return false;
-        }
-        i++;
-    }
-    return true;
-}
-
-
-// Splits a string into tokens using strtok(), adds each token in an array and returns it. 
-char **split(char *str) {
-    if (!str) return NULL;
-    char **arr = malloc(sizeof(char*));
-    if (!arr) return NULL;
-    int i = 0;
-    // int count = 0;
-    char *token;
-    char **temp;
-    char *delim = " ";
-
-    char *strToken = strtok(str, delim);
-    if (!strToken) {
-        free(arr);
-        return NULL;
-    }
-    
-    while(strToken) {
-        if (strToken[0] == '\0') continue;
-
-        token = strdup(strToken);
-        temp = realloc(arr, (i + 2) * sizeof(char*));
-        if (!temp) {
-            free(arr);
-            free(token);
-            return NULL;
-        }
-        arr = temp;
-        arr[i] = token;
-        arr[i + 1] = NULL;
-        strToken = strtok(NULL, delim);
-        i++;
-    }
-    return arr;
-}
-
-
-void sigFunction(int code) {
-    printf("\nH-shell> ");
-    fflush(stdout);
-}
-
-
-// Main function
 int main(int argc, char *argv[]) {
     
     signal(SIGINT, sigFunction);
@@ -157,17 +71,59 @@ int main(int argc, char *argv[]) {
                 exit(0);
             }
 
+            if (strcmp(arr[0], "cd") == 0) {
+                char* directory = arr[1]? arr[1]:getenv("HOME");
+                char buffer[256];
+
+                if (!directory) {
+                    c++;
+                    easyFree(arr, new_line, line);
+                    continue;  
+                }
+
+                if (getcwd(buffer, sizeof(buffer)) == NULL) {
+                    perror("getcwd error");
+                    c++;
+                    easyFree(arr, new_line, line);
+                    continue;
+                }
+
+                if (directory && strcmp(directory, "-") == 0) {
+                    directory = getenv("OLDPWD");
+                    if (directory) {
+                        printf("%s\n", directory);
+                    }
+                    else {
+                        printf("H-shell: cd: OLDPWD not set\n");
+                        c++;
+                        easyFree(arr, new_line, line);
+                        continue;
+                    }
+                }
+
+                if (chdir(directory) == -1){
+                    printf("H-shell: cd: %s: No such file or directory\n", directory);
+                } else {
+                    setenv("OLDPWD", buffer, 1);
+                }
+                c++;
+                easyFree(arr, new_line, line);
+                continue;
+            }
+
+
             if (arr[0] == NULL) {
                 easyFree(arr, new_line, line);
                 continue;
             }
+
 
 //--------- Execution [fork()]
 
             pid = fork();
             if (pid == -1) {
                 easyFree(arr, new_line, line);
-                exit(1); //EXIT_FAILURE = 1
+                exit(1); //EXIT_FAILURE
             }
 
             else if (pid == 0) {
