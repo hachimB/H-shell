@@ -88,6 +88,11 @@ valgrind --leak-check=full ./h-shell
 - Implement additional built-ins.
 - Support redirection (`>`), piping (`|`), and background processes (`&`).
 
+## Demo Video
+
+Watch a short demo of H-Shell in action:  
+[📽️ H-Shell Demo](demo.mp4)
+
 ## Author
 
 - hachimB.  
